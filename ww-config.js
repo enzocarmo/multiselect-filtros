@@ -21,12 +21,22 @@ export default {
       type: "Text",
       section: "Settings"
     },
-    label: {
+    labelsingle: {
       label: {
-        en: "Label"
+        en: "Label Single"
       },
       type: "Text",
       section: "Settings"
-    }
+    },
+    labelmultiple: {
+      label: {
+        en: "Label Multiple"
+      },
+      type: "Text",
+      section: "Settings"
+    },
   },
+  triggerEvents: [
+    { name: 'Search', label: { en: 'Search' }, event: { value: '' } },
+  ],
 };

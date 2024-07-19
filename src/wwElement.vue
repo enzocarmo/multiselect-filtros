@@ -1,14 +1,7 @@
 <template>
-  <Multiselect
-    v-model="selected"
-    :options="options"
-    mode="multiple"
-    label="dpto_descricao"
-    track-by="dpto_descricao"
-    :placeholder="content.placeholder"
-    :close-on-select="false"
-    :hideSelected="false"
-  />
+  <Multiselect v-model="selected" :options="options" mode="multiple" :placeholder="content.placeholder"
+    :close-on-select="false" :hide-selected="false" @search-change="handleSearch" :multiple-label="customMultipleLabel"
+    :filter-results="false" :searchable="true" :loading="false" noOptionsText="Nenhuma opção disponível..." />
 </template>
 
 <script>
@@ -21,7 +14,7 @@ export default {
     uid: { type: String, required: true },
   },
   setup(props) {
-    const { value: variableResult, setValue: setValue } = 
+    const { value: variableResult, setValue } =
       wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: "Value",
@@ -29,7 +22,7 @@ export default {
         defaultValue: [],
       });
 
-    const { value: variableResult2, setValue: setValue2 } = 
+    const { value: variableResult2, setValue: setValue2 } =
       wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: "Search",
@@ -51,7 +44,10 @@ export default {
     "content.data": {
       handler(newData) {
         if (Array.isArray(newData)) {
-          this.options = newData;
+          this.options = newData.map(item => ({
+            value: item.value,
+            label: item.label,
+          }));
         } else {
           this.options = [];
         }
@@ -62,14 +58,15 @@ export default {
   methods: {
     customMultipleLabel(value) {
       if (value.length === 1) {
-        return "1 loja selecionada";
+        return this.content.labelsingle;
       } else if (value.length > 1) {
-        return `${value.length} lojas selecionadas`;
+        return `${value.length} ${this.content.labelmultiple}`;
       }
       return "";
     },
     handleSearch(query) {
       this.setValue2(query);
+      this.$emit('trigger-event', { name: 'Search', event: { value: query } });
     },
   },
 };
@@ -109,8 +106,7 @@ export default {
 }
 
 .multiselect.is-active {
-  border: var(--ms-border-width-active, var(--ms-border-width, 1px)) solid
-    var(--ms-border-color-active, var(--ms-border-color, #a4a4a4));
+  border: var(--ms-border-width-active, var(--ms-border-width, 1px)) solid var(--ms-border-color-active, var(--ms-border-color, #a4a4a4));
   box-shadow: none;
 }
 
@@ -121,10 +117,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   margin: 0 auto;
-  min-height: calc(
-    var(--ms-border-width, 1px) * 2 + var(--ms-font-size, 1rem) *
-      var(--ms-line-height, 1.375) + var(--ms-py, 0.5rem) * 2
-  );
+  min-height: calc(var(--ms-border-width, 1px) * 2 + var(--ms-font-size, 1rem) * var(--ms-line-height, 1.375) + var(--ms-py, 0.5rem) * 2);
   outline: none;
   position: relative;
   width: 100%;
@@ -168,7 +161,7 @@ export default {
   appearance: none;
   background: var(--ms-bg, #fff);
   border: 0;
-  border-radius: var(--ms-radius, 4px);
+  border-radius: var(--ms-radius, 14px);
   bottom: 0;
   box-sizing: border-box;
   font-family: "Montserrat";
@@ -215,8 +208,7 @@ export default {
   line-height: var(--ms-tag-line-height, 1.25rem);
   margin-bottom: var(--ms-tag-my, 0.25rem);
   margin-right: var(--ms-tag-mx, 0.25rem);
-  padding: var(--ms-tag-py, 0.125rem) 0 var(--ms-tag-py, 0.125rem)
-    var(--ms-tag-px, 0.5rem);
+  padding: var(--ms-tag-py, 0.125rem) 0 var(--ms-tag-py, 0.125rem) var(--ms-tag-px, 0.5rem);
   white-space: nowrap;
 }
 
@@ -313,10 +305,7 @@ export default {
   align-items: center;
   display: flex;
   justify-content: center;
-  min-height: calc(
-    var(--ms-border-width, 1px) * 2 + var(--ms-font-size, 1rem) *
-      var(--ms-line-height, 1.375) + var(--ms-py, 0.5rem) * 2
-  );
+  min-height: calc(var(--ms-border-width, 1px) * 2 + var(--ms-font-size, 1rem) * var(--ms-line-height, 1.375) + var(--ms-py, 0.5rem) * 2);
   width: 100%;
 }
 
@@ -400,10 +389,8 @@ export default {
 .multiselect-dropdown {
   -webkit-overflow-scrolling: touch;
   background: var(--ms-dropdown-bg, #fff);
-  border: var(--ms-dropdown-border-width, 0px) solid
-    var(--ms-dropdown-border-color, #fff);
-  border-radius: 0 0 var(--ms-dropdown-radius, 14px)
-    var(--ms-dropdown-radius, 14px);
+  border: var(--ms-dropdown-border-width, 0px) solid var(--ms-dropdown-border-color, #fff);
+  border-radius: 0 0 var(--ms-dropdown-radius, 14px) var(--ms-dropdown-radius, 14px);
   bottom: 0;
   display: flex;
   flex-direction: column;
@@ -420,8 +407,7 @@ export default {
 }
 
 .multiselect-dropdown.is-top {
-  border-radius: var(--ms-dropdown-radius, 14px) var(--ms-dropdown-radius, 14px)
-    0 0;
+  border-radius: var(--ms-dropdown-radius, 14px) var(--ms-dropdown-radius, 14px) 0 0;
   bottom: auto;
   top: var(--ms-border-width, 1px);
   transform: translateY(-100%);
@@ -538,7 +524,9 @@ export default {
 
 .multiselect-no-options,
 .multiselect-no-results {
-  color: var(--ms-empty-color, #4b5563);
-  padding: var(--ms-option-py, 0.5rem) var(--ms-option-px, 0.75rem);
+  color: var(--ms-empty-color, #1f1f1f);
+  font-weight: 500;
+  font-family: 'Montserrat';
+  padding: 12px
 }
 </style>
