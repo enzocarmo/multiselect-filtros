@@ -1,7 +1,7 @@
 export default {
   editor: {
     label: {
-      en: "MultiSelect Lojas",
+      en: "MultiSelect Filtros",
     },
   },
   properties: {
