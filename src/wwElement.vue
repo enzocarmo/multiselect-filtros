@@ -38,7 +38,7 @@ export default {
       wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: "Search",
-        type: "text"
+        type: "text",
       });
 
     const selected = ref([]);
