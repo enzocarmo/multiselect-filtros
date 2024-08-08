@@ -34,6 +34,13 @@ export default {
         defaultValue: [],
       });
 
+     const { value: variableResult2, setValue2 } =
+      wwLib.wwVariable.useComponentVariable({
+        uid: props.uid,
+        name: "Search",
+        type: "text"
+      });
+
     const selected = ref([]);
     const options = ref([]);
     let internalChange = false;
