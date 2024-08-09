@@ -34,7 +34,7 @@ export default {
         defaultValue: [],
       });
 
-     const { value: variableResult2, setValue2 } =
+    const { value: variableResult2, setValue: setValue2 } =
       wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
         name: "Search",
@@ -72,7 +72,12 @@ export default {
       selected.value = variableResult.value;
     });
 
-    return { selected, options };
+    const handleSearch = (query) => {
+      setValue2(query);
+      this.$emit('trigger-event', { name: 'Search', event: { value: query } });
+    };
+
+    return { selected, options, handleSearch, customMultipleLabel };
   },
   methods: {
     customMultipleLabel(value) {
@@ -82,10 +87,6 @@ export default {
         return `${value.length} ${this.content.labelmultiple}`;
       }
       return "";
-    },
-    handleSearch(query) {
-      this.setValue2(query);
-      this.$emit('trigger-event', { name: 'Search', event: { value: query } });
     },
   },
 };
