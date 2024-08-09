@@ -25,7 +25,7 @@ export default {
     content: { type: Object, required: true },
     uid: { type: String, required: true },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const { value: variableResult, setValue } =
       wwLib.wwVariable.useComponentVariable({
         uid: props.uid,
@@ -73,11 +73,11 @@ export default {
     });
 
     const handleSearch = (query) => {
-      setValue2(query);
-      this.$emit('trigger-event', { name: 'Search', event: { value: query } });
+      setValue2(query); // Properly using the setValue2 method
+      emit('trigger-event', { name: 'Search', event: { value: query } }); // Use emit instead of this.$emit
     };
 
-    return { selected, options, handleSearch, customMultipleLabel };
+    return { selected, options, handleSearch };
   },
   methods: {
     customMultipleLabel(value) {
